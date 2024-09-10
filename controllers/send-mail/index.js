@@ -1,6 +1,5 @@
 import validateMail from "../../validators/mail.validator.js";
 import sendMailToCustomer from "../../services/email.js";
-import * as fs from "node:fs";
 import getFileExtension from "../../helpers/getFileExtension.js";
 
 const sendMail = async (req, res) => {
