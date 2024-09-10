@@ -54,7 +54,7 @@ async function sendMailToCustomer(data, file = {}) {
         await transporter.sendMail(customerMailOptions);
         await transporter.sendMail(mailOptions);
 
-        return `Mails sent successfully.`;
+        return `Appeal mail sent successfully.`;
     } catch (error) {
         throw new Error(`Failed to send registration confirmation email::${error}`);
     }
