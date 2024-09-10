@@ -1,16 +1,18 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import bodyParser from 'body-parser';
 
 import router from './router/index.js';
+import path from "path";
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 5001;
 
+app.use(express.urlencoded({ extended : true }));
 app.use(express.json());
-app.use(bodyParser.json());
+
+app.use('/api', express.static(path.resolve('public')));
 
 app.use('/', router);
 

@@ -1,6 +1,8 @@
 import nodemailer from 'nodemailer';
 
 import dotenv from 'dotenv';
+import {renderHtml} from "../helpers/renderHtml.js";
+import fetchImageAsBuffer from "../helpers/fetchImageAsBuffer.js";
 
 dotenv.config();
 
@@ -15,21 +17,38 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-const createMailConfig = (to, subject, html) => {
-    return {
+const createMailConfig = (to, subject, html, file = {}) => {
+    const config =  {
         from: process.env.MAIL,
         to,
         subject,
         html
     };
+
+    if(Object.values(file).length) {
+        config.attachments = [
+            file
+        ];
+    }
+
+    return config;
 };
 
-async function sendMailToCustomer(email) {
-    const customerHtml = `<h1>Congrats you successfully apply to Sebastatsi college</h1>`;
-    const html = `<h1>${email} apply to Sebastatsi college.</h1>`;
+async function sendMailToCustomer(data, file = {}) {
+    const {email, name} = data;
+    const logo = `${process.env.IMAGE_URL}/logo.jpg`;
+    const customerHtml = await renderHtml('applicant.hbs', {name});
+    const html =  await renderHtml('owner.hbs', data);
 
-    const customerMailOptions = createMailConfig(email, 'Apply for College', customerHtml);
-    const mailOptions = createMailConfig(process.env.MAIL, 'Applying for College', html);
+    const logoBuffer = await fetchImageAsBuffer(logo);
+
+    const customerMailOptions = createMailConfig(email, 'Apply for College', customerHtml, {
+        filename: 'Logo.png',
+        content: logoBuffer,
+        cid: 'logo'
+    });
+
+    const mailOptions = createMailConfig(process.env.MAIL, 'Applying for College', html, file);
 
     try {
         await transporter.sendMail(customerMailOptions);
