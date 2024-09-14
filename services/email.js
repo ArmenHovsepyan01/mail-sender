@@ -2,7 +2,8 @@ import nodemailer from 'nodemailer';
 
 import dotenv from 'dotenv';
 import {renderHtml} from "../helpers/renderHtml.js";
-import fetchImageAsBuffer from "../helpers/fetchImageAsBuffer.js";
+import path from "path";
+import fs from "fs";
 
 dotenv.config();
 
@@ -36,11 +37,11 @@ const createMailConfig = (to, subject, html, file = {}) => {
 
 async function sendMailToCustomer(data, file = {}) {
     const {email, name} = data;
-    const logo = `${process.env.IMAGE_URL}/logo.jpg`;
+    const logoPath = path.resolve('public/images/logo.jpg');
     const customerHtml = await renderHtml('applicant.hbs', {name});
     const html =  await renderHtml('owner.hbs', data);
 
-    const logoBuffer = await fetchImageAsBuffer(logo);
+    const logoBuffer = fs.readFileSync(logoPath);
 
     const customerMailOptions = createMailConfig(email, 'Apply for College', customerHtml, {
         filename: 'Logo.png',
