@@ -4,13 +4,14 @@ import dotenv from 'dotenv';
 import router from './router/index.js';
 import path from "path";
 import cors from "cors";
+import {blockNonBrowsersRequests} from "./middlwares/blockNonBrowsersRequests.js";
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 5001;
 
-// app.use(blockNonBrowsersRequests);
+app.use(blockNonBrowsersRequests);
 
 app.use(cors({
     origin: 'https://www.sebastatsi.am',
