@@ -1,12 +1,13 @@
 import validateMail from "../../validators/mail.validator.js";
-import sendMailToCustomer from "../../services/email.js";
+import validateSupportQuestion from "../../validators/supportQuestion.validator.js";
 import getFileExtension from "../../helpers/getFileExtension.js";
+import {sendMailToCustomer, askSupportQuestion} from "../../services/email.js";
 
 const sendMail = async (req, res) => {
     try {
         const body = Object.assign({}, req.body);
 
-        if(!req?.file) {
+        if (!req?.file) {
             return res.status(400).send({
                 message: 'File is required.'
             })
@@ -22,7 +23,7 @@ const sendMail = async (req, res) => {
 
         const fileExtension = getFileExtension(req.file.mimetype);
 
-        if(fileExtension?.error){
+        if (fileExtension?.error) {
             return res.status(400).send({
                 message: fileExtension.error.message,
             });
@@ -44,4 +45,30 @@ const sendMail = async (req, res) => {
     }
 }
 
-export default sendMail;
+const supportQuestions = async (req, res) => {
+    try {
+        const {body} = req;
+        const {error} = validateSupportQuestion(body);
+
+        if (error) {
+            return res.status(400).send({
+                message: error.details[0].message,
+            });
+        }
+
+        const sendMailResponse = await askSupportQuestion(body);
+
+        return res.status(200).json({
+            message: sendMailResponse
+        });
+    } catch (e) {
+        console.log(e);
+        console.error(`Catched from supportQuestions ERROR::${e.message}`);
+    }
+}
+
+
+export {
+    sendMail,
+    supportQuestions
+};

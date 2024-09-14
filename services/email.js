@@ -19,14 +19,14 @@ const transporter = nodemailer.createTransport({
 });
 
 const createMailConfig = (to, subject, html, file = {}) => {
-    const config =  {
+    const config = {
         from: process.env.MAIL,
         to,
         subject,
         html
     };
 
-    if(Object.values(file).length) {
+    if (Object.values(file).length) {
         config.attachments = [
             file
         ];
@@ -39,7 +39,7 @@ async function sendMailToCustomer(data, file = {}) {
     const {email, name} = data;
     const logoPath = path.resolve('public/images/logo.jpg');
     const customerHtml = await renderHtml('applicant.hbs', {name});
-    const html =  await renderHtml('owner.hbs', data);
+    const html = await renderHtml('owner.hbs', data);
 
     const logoBuffer = fs.readFileSync(logoPath);
 
@@ -61,4 +61,18 @@ async function sendMailToCustomer(data, file = {}) {
     }
 }
 
-export default sendMailToCustomer;
+async function askSupportQuestion(data) {
+    const html = await renderHtml('supportMail.hbs', data);
+
+    const mailOptions = createMailConfig(process.env.MAIL, 'Ask Support Question', html);
+
+    try {
+        await transporter.sendMail(mailOptions);
+
+        return `Mail sent to support successfully.`;
+    } catch (error) {
+        throw new Error(`Failed to send support email::${error}`);
+    }
+}
+
+export {sendMailToCustomer, askSupportQuestion};
