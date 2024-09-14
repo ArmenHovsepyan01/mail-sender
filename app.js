@@ -14,7 +14,7 @@ const port = process.env.PORT || 5001;
 app.use(blockNonBrowsersRequests);
 
 app.use(cors({
-    origin: 'https://www.sebastatsi.am',
+    origin: process.env.SITE_ORIGIN,
     methods: ["GET",
         "POST",
         "PUT",
