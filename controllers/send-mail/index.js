@@ -42,6 +42,9 @@ const sendMail = async (req, res) => {
     } catch (e) {
         console.log(e);
         console.error(`Error in sendMail ${e.message}`);
+        return res.status(500).json({
+            message: 'Failed to send email. Please try again later.'
+        });
     }
 }
 
@@ -64,6 +67,9 @@ const supportQuestions = async (req, res) => {
     } catch (e) {
         console.log(e);
         console.error(`Catched from supportQuestions ERROR::${e.message}`);
+        return res.status(500).json({
+            message: 'Failed to submit support question. Please try again later.'
+        });
     }
 }
 
